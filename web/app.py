@@ -64,7 +64,7 @@ def index():
     # Fetch data for the graph and event list
     conn = sqlite3.connect('daily_events.db')
     cursor = conn.cursor()
-    cursor.execute('SELECT datetime, value, description FROM events ORDER BY datetime ASC')  # Order by datetime in ascending order
+    cursor.execute('SELECT datetime, value, description, id FROM events ORDER BY datetime ASC')  # Order by datetime in ascending order
     data = cursor.fetchall()
 
     # Calculate summary statistics
@@ -128,8 +128,14 @@ def index():
     return render_template('index.html', data=[], graph_filename=None,
                            total_events=0, total_value=0, average_value=0)
 
-
-
+@app.route('/delete/<int:event_id>', methods=['POST'])
+def delete_event(event_id):
+    conn = sqlite3.connect('daily_events.db')
+    cursor = conn.cursor()
+    cursor.execute('DELETE FROM events WHERE id = ?', (event_id,))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     init_db()
