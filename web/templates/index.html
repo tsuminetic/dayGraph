@@ -88,6 +88,11 @@
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
             border-left: 5px solid #4CAF50;
             display: flex;
+            justify-content: space-between; /* Space between content and delete button */
+            align-items: center; /* Center vertically */
+        }
+        .event-item .details {
+            display: flex;
             flex-direction: column;
         }
         .event-item .date {
@@ -102,6 +107,20 @@
         .event-item .value {
             font-size: 1em;
             color: #555;
+        }
+        .event-item form {
+            margin: 0;
+        }
+        .event-item input[type="submit"] {
+            background-color: #f44336; /* Red background */
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        .event-item input[type="submit"]:hover {
+            background-color: #d32f2f;
         }
     </style>
 </head>
@@ -160,9 +179,14 @@
             <ul>
                 {% for event in data[::-1] %} <!-- Reverse order of events -->
                 <li class="event-item">
-                    <span class="date">{{ event[0] }}</span>
-                    <span class="description">{{ event[2] }}</span>
-                    <span class="value">Value: {{ event[1] }}</span>
+                    <div class="details">
+                        <span class="date">{{ event[0] }}</span>
+                        <span class="description">{{ event[2] }}</span>
+                        <span class="value">Value: {{ event[1] }}</span>
+                    </div>
+                    <form method="post" action="{{ url_for('delete_event', event_id=event[3]) }}">
+                        <input type="submit" value="Delete">
+                    </form>
                 </li>
                 {% endfor %}
             </ul>
