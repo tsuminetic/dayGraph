@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Daily Events Logger</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align items at the top */
+        }
+        .form-container {
+            width: 45%;
+            border: 1px solid #ccc;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            box-sizing: border-box;
+            margin-right: 20px;
+        }
+        .form-container h1 {
+            text-align: center;
+        }
+        .form-container form {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-container label {
+            margin-bottom: 5px;
+        }
+        .form-container input, .form-container textarea {
+            margin-bottom: 10px;
+            padding: 5px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        .form-container input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .form-container input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        .statistics {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .graph-events-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .graph-container {
+            width: 70%; /* Adjust width as needed */
+            margin-bottom: 20px; /* Create space between graph and event list */
+        }
+        .graph-container h2 {
+            text-align: center;
+        }
+        .graph-container img {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%; /* Make sure image is responsive */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Optional: Add box shadow */
+        }
+        .event-list {
+            width: 60%; /* Adjusted width */
+            max-height: 250px; /* Limit height for scrollbar */
+            overflow-y: auto; /* Enable vertical scrollbar */
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            box-sizing: border-box;
+        }
+        .event-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #4CAF50;
+            display: flex;
+            flex-direction: column;
+        }
+        .event-item .date {
+            font-size: 0.9em;
+            color: #888;
+        }
+        .event-item .description {
+            font-size: 1.1em;
+            color: #333;
+            margin: 5px 0;
+        }
+        .event-item .value {
+            font-size: 1em;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Daily Events Logger</h1>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <form method="post">
+            <label for="date">Date (YYYY-MM-DD):</label>
+            <input type="text" id="date" name="date" required><br><br>
+            
+            <label for="hour">Hour (HH:MM):</label>
+            <input type="text" id="hour" name="hour" pattern="^(0[1-9]|1[0-2]):[0-5][0-9]$" title="Enter time in HH:MM format" required>
+            <select name="ampm" id="ampm">
+                <option value="AM">AM</option>
+                <option value="PM">PM</option>
+            </select><br><br>
+            
+            <label for="value">Value:</label>
+            <input type="number" id="value" name="value" required><br><br>
+            
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" rows="4" required></textarea><br><br>
+            
+            <input type="submit" value="Add Event">
+        </form>
+        
+
+        <div class="statistics">
+            <h3>Statistics</h3>
+            <p>Total Events: {{ total_events }}</p>
+            <p>Total Value: {{ total_value }}</p>
+            <p>Average Value: {{ average_value }}</p>
+        </div>
+    </div>
+
+    <div class="graph-events-container">
+        <div class="graph-container">
+            {% if graph_filename %}
+                <h2>Cumulative Daily Values Graph</h2>
+                <img src="{{ url_for('static', filename=graph_filename) }}" alt="Cumulative Daily Values Graph">
+            {% endif %}
+        </div>
+
+        <div class="event-list">
+            <h3>Events List</h3>
+            <ul>
+                {% for event in data[::-1] %} <!-- Reverse order of events -->
+                <li class="event-item">
+                    <span class="date">{{ event[0] }}</span>
+                    <span class="description">{{ event[2] }}</span>
+                    <span class="value">Value: {{ event[1] }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
