@@ -35,7 +35,7 @@ def index():
 
         try:
             datetime.datetime.strptime(date, '%Y-%m-%d')
-            datetime.datetime.strptime(hour_minute, '%I:%M')  # Check hour_minute format
+            datetime.datetime.strptime(hour_minute, '%I:%M')
         except ValueError:
             flash("Invalid date or time format.")
             return redirect(url_for('index'))
@@ -64,7 +64,7 @@ def index():
     # Fetch data for the graph and event list
     conn = sqlite3.connect('daily_events.db')
     cursor = conn.cursor()
-    cursor.execute('SELECT datetime, value, description, id FROM events ORDER BY datetime ASC')  # Order by datetime in ascending order
+    cursor.execute('SELECT datetime, value, description, id FROM events ORDER BY datetime ASC')
     data = cursor.fetchall()
 
     # Calculate summary statistics
